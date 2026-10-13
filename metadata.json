@@ -1,0 +1,8 @@
+{
+  "name": "Genes India",
+  "description": "Comprehensive ART Bank platform with marketing website, internal staff portals, super admin analytics, and IVF hospital workflow.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
