@@ -48,6 +48,8 @@ const ReviewsManagement = lazy(() => import('./pages/admin/ReviewsManagement'));
 // Lazy Loaded Staff Portal Pages
 const DonorList = lazy(() => import('./pages/staff/DonorList'));
 const DonorProfile = lazy(() => import('./pages/staff/DonorProfile'));
+const TasksList = lazy(() => import('./pages/staff/TasksList'));
+const LabReports = lazy(() => import('./pages/staff/LabReports'));
 
 // Lazy Loaded Hospital Portal Pages
 const HospitalDashboard = lazy(() => import('./pages/hospital/HospitalDashboard'));
@@ -95,9 +97,11 @@ export default function App() {
             <Route path="inventory" element={<InventoryList />} />
             <Route path="donors/:id" element={<DonorProfile />} />
             <Route path="requests" element={<SampleRequestsAdmin />} />
+            <Route path="tasks" element={<TasksList />} />
+            <Route path="lab-reports" element={<LabReports />} />
             <Route path="settings" element={<Settings />} />
             <Route path="profile" element={<ProfilePage />} />
-            <Route path="*" element={<div className="p-8 text-slate-500">Page under construction in demo</div>} />
+            <Route path="*" element={<div className="p-8 text-slate-500">Requested page not found.</div>} />
           </Route>
 
           {/* Staff Portal */}
@@ -107,13 +111,15 @@ export default function App() {
             <Route path="donors/:id" element={<DonorProfile />} />
             <Route path="inventory" element={<InventoryList />} />
             <Route path="requests" element={<SampleRequestsAdmin />} />
+            <Route path="tasks" element={<TasksList />} />
+            <Route path="lab-reports" element={<LabReports />} />
             <Route path="leads" element={<LeadsList />} />
             <Route path="contacts" element={<ContactQueries />} />
             <Route path="reviews" element={<ReviewsManagement />} />
             <Route path="blogs" element={<BlogManagement />} />
             <Route path="gallery" element={<GalleryPage />} />
             <Route path="profile" element={<ProfilePage />} />
-            <Route path="*" element={<div className="p-8 text-slate-500">Page under construction in demo</div>} />
+            <Route path="*" element={<div className="p-8 text-slate-500">Requested page not found.</div>} />
           </Route>
 
           {/* Hospital Partner Portal */}
@@ -124,7 +130,7 @@ export default function App() {
             <Route path="requests/new/:donorId" element={<HospitalNewRequest />} />
             <Route path="reservations" element={<HospitalReservations />} />
             <Route path="profile" element={<ProfilePage />} />
-            <Route path="*" element={<div className="p-8 text-slate-500">Page under construction in demo</div>} />
+            <Route path="*" element={<div className="p-8 text-slate-500">Requested page not found.</div>} />
           </Route>
         </Routes>
       </Suspense>

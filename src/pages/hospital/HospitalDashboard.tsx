@@ -231,7 +231,7 @@ export default function HospitalDashboard() {
                       <td className="px-5 py-4">
                         <span className="font-medium text-slate-800 text-xs inline-flex items-center gap-1.5 bg-slate-100 px-2 py-0.5 rounded-md">
                           <TestTube className="w-3 h-3 text-blue-600" />
-                          {req.donor?.donorCode || 'DON-CODE'}
+                          {req.donor?.donorCode || 'N/A'}
                         </span>
                         <div className="text-[11px] text-slate-500 mt-0.5">
                           {req.donor?.bloodGroup ? `${req.donor.bloodGroup} • ${req.donor.donorType || 'Gamete'}` : 'Verified'}

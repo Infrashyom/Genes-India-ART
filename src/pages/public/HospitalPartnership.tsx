@@ -1,7 +1,42 @@
+import { useState } from 'react';
 import { motion } from 'motion/react';
-import { Building2, ShieldCheck, Microscope, Database, Lock, Clock, ChevronRight } from 'lucide-react';
+import { Building2, ShieldCheck, Microscope, Database, Lock, Clock, ChevronRight, CheckCircle2 } from 'lucide-react';
+import api from '../../lib/api';
 
 export default function HospitalPartnership() {
+  const [formData, setFormData] = useState({
+    hospitalName: '',
+    icmrNumber: '',
+    contactPerson: '',
+    email: '',
+    phone: '',
+    location: '',
+    message: ''
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [errorMessage, setErrorMessage] = useState('');
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setStatus('idle');
+    setErrorMessage('');
+    try {
+      await api.post('/crm/leads', {
+        ...formData,
+        notes: `ICMR Reg: ${formData.icmrNumber}`
+      });
+      setStatus('success');
+    } catch (err: any) {
+      console.error(err);
+      setStatus('error');
+      setErrorMessage(err.response?.data?.error || 'Failed to submit partnership request. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   const fadeUp = {
     initial: { opacity: 0, y: 20 },
     animate: { opacity: 1, y: 0 },
@@ -121,41 +156,121 @@ export default function HospitalPartnership() {
               <p className="text-slate-600">Submit your hospital's details. Our administrative team will verify your credentials before granting access to the Hospital Portal.</p>
             </div>
 
-            <form className="grid grid-cols-1 md:grid-cols-2 gap-6" onSubmit={(e) => { e.preventDefault(); alert("Enquiry routed to Admin Portal successfully."); }}>
-              <div className="space-y-2">
-                <label className="text-sm font-semibold text-slate-700">Hospital/Clinic Name <span className="text-red-500">*</span></label>
-                <input required type="text" className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all" />
-              </div>
-              <div className="space-y-2">
-                <label className="text-sm font-semibold text-slate-700">ICMR Registration Number <span className="text-red-500">*</span></label>
-                <input required type="text" className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all" />
-              </div>
-              <div className="space-y-2">
-                <label className="text-sm font-semibold text-slate-700">Chief Doctor / Director <span className="text-red-500">*</span></label>
-                <input required type="text" className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all" />
-              </div>
-              <div className="space-y-2">
-                <label className="text-sm font-semibold text-slate-700">Official Email Address <span className="text-red-500">*</span></label>
-                <input required type="email" className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all" />
-              </div>
-              <div className="space-y-2">
-                <label className="text-sm font-semibold text-slate-700">Phone Number <span className="text-red-500">*</span></label>
-                <input required type="tel" className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all" />
-              </div>
-              <div className="space-y-2">
-                <label className="text-sm font-semibold text-slate-700">City & State <span className="text-red-500">*</span></label>
-                <input required type="text" className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all" />
-              </div>
-              <div className="space-y-2 md:col-span-2">
-                <label className="text-sm font-semibold text-slate-700">Additional Message</label>
-                <textarea rows={4} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"></textarea>
-              </div>
-              <div className="md:col-span-2 pt-4">
-                <button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white text-lg font-bold py-4 rounded-xl transition-all shadow-lg shadow-blue-600/20">
-                  Submit Partnership Request
+            {status === 'success' ? (
+              <div className="p-8 bg-emerald-50 border border-emerald-200 rounded-3xl text-center space-y-4">
+                <div className="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto">
+                  <CheckCircle2 className="w-8 h-8" />
+                </div>
+                <h3 className="text-2xl font-bold text-emerald-950">Partnership Request Submitted</h3>
+                <p className="text-emerald-800 max-w-lg mx-auto leading-relaxed">
+                  Thank you, <strong>{formData.hospitalName}</strong>. Your onboarding request has been submitted to our administrative team. We will verify your ICMR credentials and contact you within 24–48 hours to activate your Hospital Portal account.
+                </p>
+                <button
+                  onClick={() => {
+                    setStatus('idle');
+                    setFormData({
+                      hospitalName: '',
+                      icmrNumber: '',
+                      contactPerson: '',
+                      email: '',
+                      phone: '',
+                      location: '',
+                      message: ''
+                    });
+                  }}
+                  className="mt-4 text-sm font-semibold text-emerald-900 underline cursor-pointer"
+                >
+                  Submit another registration
                 </button>
               </div>
-            </form>
+            ) : (
+              <form className="grid grid-cols-1 md:grid-cols-2 gap-6" onSubmit={handleSubmit}>
+                {status === 'error' && (
+                  <div className="md:col-span-2 p-4 bg-rose-50 border border-rose-200 rounded-xl text-rose-700 text-sm">
+                    {errorMessage || 'Failed to submit partnership request. Please check your connection.'}
+                  </div>
+                )}
+
+                <div className="space-y-2">
+                  <label className="text-sm font-semibold text-slate-700">Hospital/Clinic Name <span className="text-red-500">*</span></label>
+                  <input 
+                    required 
+                    type="text" 
+                    value={formData.hospitalName}
+                    onChange={(e) => setFormData({ ...formData, hospitalName: e.target.value })}
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all" 
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-semibold text-slate-700">ICMR Registration Number <span className="text-red-500">*</span></label>
+                  <input 
+                    required 
+                    type="text" 
+                    value={formData.icmrNumber}
+                    onChange={(e) => setFormData({ ...formData, icmrNumber: e.target.value })}
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all" 
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-semibold text-slate-700">Chief Doctor / Director <span className="text-red-500">*</span></label>
+                  <input 
+                    required 
+                    type="text" 
+                    value={formData.contactPerson}
+                    onChange={(e) => setFormData({ ...formData, contactPerson: e.target.value })}
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all" 
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-semibold text-slate-700">Official Email Address <span className="text-red-500">*</span></label>
+                  <input 
+                    required 
+                    type="email" 
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all" 
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-semibold text-slate-700">Phone Number <span className="text-red-500">*</span></label>
+                  <input 
+                    required 
+                    type="tel" 
+                    value={formData.phone}
+                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all" 
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-semibold text-slate-700">City & State <span className="text-red-500">*</span></label>
+                  <input 
+                    required 
+                    type="text" 
+                    value={formData.location}
+                    onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all" 
+                  />
+                </div>
+                <div className="space-y-2 md:col-span-2">
+                  <label className="text-sm font-semibold text-slate-700">Additional Message</label>
+                  <textarea 
+                    rows={4} 
+                    value={formData.message}
+                    onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                  ></textarea>
+                </div>
+                <div className="md:col-span-2 pt-4">
+                  <button 
+                    type="submit" 
+                    disabled={isSubmitting}
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white text-lg font-bold py-4 rounded-xl transition-all shadow-lg shadow-blue-600/20 disabled:opacity-50 cursor-pointer"
+                  >
+                    {isSubmitting ? 'Submitting Partnership Request...' : 'Submit Partnership Request'}
+                  </button>
+                </div>
+              </form>
+            )}
           </motion.div>
         </div>
       </section>

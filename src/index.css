@@ -56,6 +56,32 @@
   scrollbar-color: #cbd5e1 #f8fafc;
 }
 
+/* Completely hide scrollbars on all side panels, aside elements, and no-scrollbar containers across all browsers */
+.no-scrollbar,
+.no-scrollbar::-webkit-scrollbar,
+aside,
+aside::-webkit-scrollbar,
+aside nav,
+aside nav::-webkit-scrollbar,
+.sidebar,
+.sidebar::-webkit-scrollbar,
+[data-sidebar],
+[data-sidebar]::-webkit-scrollbar {
+  -ms-overflow-style: none !important; /* IE and Edge */
+  scrollbar-width: none !important;    /* Firefox */
+}
+
+.no-scrollbar::-webkit-scrollbar,
+aside::-webkit-scrollbar,
+aside nav::-webkit-scrollbar,
+.sidebar::-webkit-scrollbar,
+[data-sidebar]::-webkit-scrollbar {
+  display: none !important;            /* Chrome, Safari, Opera */
+  width: 0 !important;
+  height: 0 !important;
+  background: transparent !important;
+}
+
 @keyframes marquee {
   0% { transform: translateX(0%); }
   100% { transform: translateX(-50%); }

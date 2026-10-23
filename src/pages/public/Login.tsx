@@ -9,18 +9,10 @@ export default function Login() {
   const navigate = useNavigate();
   const { login } = useAuth();
   
-  const [role, setRole] = useState<'admin' | 'staff' | 'hospital'>('admin');
-  const [email, setEmail] = useState(`demo@admin.genesindia.com`);
-  const [password, setPassword] = useState('password');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-
-  const handleRoleSelect = (selectedRole: 'admin' | 'staff' | 'hospital') => {
-    setRole(selectedRole);
-    setEmail(`demo@${selectedRole}.genesindia.com`);
-    setPassword('password');
-    setError('');
-  };
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -68,28 +60,6 @@ export default function Login() {
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-white py-8 px-4 shadow-xl shadow-slate-200/50 sm:rounded-2xl sm:px-10 border border-slate-100">
           <form className="space-y-6" onSubmit={handleLogin}>
-            <div>
-              <label className="block text-sm font-medium text-slate-700">
-                Quick Roles (Demo)
-              </label>
-              <div className="mt-2 grid grid-cols-3 gap-3">
-                {(['admin', 'staff', 'hospital'] as const).map((r) => (
-                  <button
-                    key={r}
-                    type="button"
-                    onClick={() => handleRoleSelect(r)}
-                    className={`py-2 px-3 flex items-center justify-center text-sm font-medium rounded-lg border transition-all ${
-                      role === r 
-                        ? 'border-blue-600 bg-blue-50 text-blue-700 ring-1 ring-blue-600' 
-                        : 'border-slate-300 bg-white text-slate-700 hover:bg-slate-50'
-                    }`}
-                  >
-                    {r.charAt(0).toUpperCase() + r.slice(1)}
-                  </button>
-                ))}
-              </div>
-            </div>
-
             {error && (
               <div className="p-3 rounded-lg bg-red-50 text-red-700 text-sm">
                 {error}
@@ -137,7 +107,7 @@ export default function Login() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors disabled:opacity-50"
+                className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors disabled:opacity-50 cursor-pointer"
               >
                 {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Sign in to Dashboard'}
               </button>
@@ -147,11 +117,12 @@ export default function Login() {
           <div className="mt-6">
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-slate-300" />
+                <div className="w-full border-t border-slate-200" />
               </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white text-slate-500">
-                  Protected by 2FA & Biometrics
+              <div className="relative flex justify-center text-xs">
+                <span className="px-3 bg-white text-slate-500 flex items-center gap-1.5 font-medium">
+                  <ShieldCheck className="w-4 h-4 text-emerald-600" />
+                  Authorized Clinical & Institutional Access
                 </span>
               </div>
             </div>

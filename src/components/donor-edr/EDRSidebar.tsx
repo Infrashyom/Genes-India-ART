@@ -31,7 +31,10 @@ export default function EDRSidebar({
           </span>
         </div>
 
-        <div className="p-2 space-y-1 max-h-[calc(100vh-180px)] overflow-y-auto custom-scrollbar">
+        <div 
+          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+          className="p-2 space-y-1 max-h-[calc(100vh-180px)] overflow-y-auto no-scrollbar"
+        >
           {tabs.map((tab) => {
             const isActive = activeTab === tab.id || (!!tab.numericAlias && activeTab === tab.numericAlias);
             const isSaved =

@@ -26,7 +26,9 @@ import {
   MessageSquare,
   FileText,
   Star,
-  Truck
+  Truck,
+  CheckSquare,
+  FlaskConical
 } from 'lucide-react';
 import { cn } from './lib/utils';
 import { APP_NAME, APP_TAGLINE, APP_DESCRIPTION, CONTACT_INFO, SOCIAL_LINKS } from './constants';
@@ -237,6 +239,8 @@ export function DashboardLayout() {
     { name: 'Analytics Overview', href: '/admin', icon: LayoutDashboard },
     { name: 'Sample Requests', href: '/admin/requests', icon: TestTube },
     { name: 'Donor Inventory', href: '/admin/inventory', icon: Users },
+    { name: 'Operational Tasks', href: '/admin/tasks', icon: CheckSquare },
+    { name: 'Lab & Diagnostics', href: '/admin/lab-reports', icon: FlaskConical },
     { name: 'Partnership Requests', href: '/admin/leads', icon: Building2 },
     { name: 'Contact Responses', href: '/admin/contacts', icon: MessageSquare },
     { name: 'User Management', href: '/admin/users', icon: Users },
@@ -253,6 +257,8 @@ export function DashboardLayout() {
     { name: 'My Profile', href: '/hospital/profile', icon: Users },
   ] : [
     { name: 'Donor Records (EDR)', href: '/staff/donors', icon: Users },
+    { name: 'Operational Tasks', href: '/staff/tasks', icon: CheckSquare },
+    { name: 'Lab & Diagnostics', href: '/staff/lab-reports', icon: FlaskConical },
     { name: 'Donor Inventory', href: '/staff/inventory', icon: Users },
     { name: 'Sample Requests', href: '/staff/requests', icon: TestTube },
     { name: 'Partnership Requests', href: '/staff/leads', icon: Building2 },
@@ -273,7 +279,7 @@ export function DashboardLayout() {
           onClick={() => setMobileSidebarOpen(false)}
         />
       )}
-      <aside className={`w-64 bg-slate-900 text-slate-300 flex flex-col fixed h-full z-30 transition-transform duration-300 ${mobileSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
+      <aside className={`w-64 bg-slate-900 text-slate-300 flex flex-col fixed h-full z-30 transition-transform duration-300 no-scrollbar ${mobileSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
         <div className="p-4 sm:p-5 flex items-center justify-between text-white border-b border-slate-800">
           <BrandLogo variant="light" size="sm" />
           <button className="lg:hidden text-slate-400 hover:text-white" onClick={() => setMobileSidebarOpen(false)}>
@@ -281,7 +287,10 @@ export function DashboardLayout() {
           </button>
         </div>
         
-        <nav className="flex-1 py-3 px-3 space-y-0.5 overflow-y-auto no-scrollbar">
+        <nav 
+          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+          className="flex-1 py-3 px-3 space-y-0.5 overflow-y-auto no-scrollbar"
+        >
           {navItems.map((item) => {
             const isActive = location.pathname === item.href;
             return (

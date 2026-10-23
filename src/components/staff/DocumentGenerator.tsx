@@ -584,7 +584,7 @@ export default function DocumentGenerator({ donor }: DocumentGeneratorProps) {
                 <td className="w-1/4 p-1.5 bg-slate-50 font-semibold text-slate-700">Full Legal Name:</td>
                 <td className="w-1/4 p-1.5 font-semibold text-slate-900">{donorFullName}</td>
                 <td className="w-1/4 p-1.5 bg-slate-50 font-semibold text-slate-700">Donor Unique ID:</td>
-                <td className="w-1/4 p-1.5 font-mono font-bold text-blue-700">{donor.id || 'DON-2026-000145'}</td>
+                <td className="w-1/4 p-1.5 font-mono font-bold text-blue-700">{donor.id || donor.donorCode || 'N/A'}</td>
               </tr>
               <tr className="border-b border-slate-200">
                 <td className="p-1.5 bg-slate-50 font-semibold text-slate-700">Date of Birth & Age:</td>
