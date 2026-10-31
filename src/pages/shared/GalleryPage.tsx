@@ -269,18 +269,21 @@ export default function GalleryPage({ isPublic = false }: { isPublic?: boolean }
 
   if (isPublic) {
     return (
-      <div>
-        <div className="bg-blue-600 py-16 lg:py-24 relative overflow-hidden">
-          <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1579154204601-01588f351e67?auto=format&fit=crop&q=80&w=2000')] bg-cover bg-center opacity-10 mix-blend-overlay"></div>
-          <div className="absolute inset-0 bg-gradient-to-t from-blue-900/50 to-transparent"></div>
-          <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
-            <h1 className="text-4xl lg:text-5xl font-extrabold text-white mb-6">Gallery</h1>
-            <p className="text-xl text-blue-100 max-w-2xl mx-auto leading-relaxed">
-              Explore our world-class facilities, advanced laboratory equipment, and dedicated team of specialists.
+      <div className="w-full bg-slate-50 min-h-screen pb-16">
+        <div className="bg-white pt-6 sm:pt-8 pb-6 sm:pb-8 border-b border-slate-100">
+          <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <span className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-100 mb-2">
+              Facility & Diagnostics
+            </span>
+            <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight mb-2">
+              Photo Gallery
+            </h1>
+            <p className="text-sm sm:text-base text-slate-500 max-w-xl mx-auto leading-relaxed">
+              Explore our cryogenic preservation facilities, laboratory diagnostics, and clinical equipment.
             </p>
           </div>
         </div>
-        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
           <InnerContent />
         </div>
       </div>

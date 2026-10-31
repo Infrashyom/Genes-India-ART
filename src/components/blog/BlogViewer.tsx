@@ -4,10 +4,14 @@ import { motion } from 'motion/react';
 
 interface Blog {
   _id: string;
+  slug?: string;
   title: string;
   summary: string;
   content: string;
   author: string;
+  category?: string;
+  status?: string;
+  tags?: string[];
   date: string;
   image: string;
 }

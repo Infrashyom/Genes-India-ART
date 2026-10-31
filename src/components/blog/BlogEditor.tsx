@@ -1,11 +1,26 @@
 import React, { useState, useRef } from 'react';
-import { X, Image as ImageIcon, Globe, Tag, Clock, Eye, Sparkles } from 'lucide-react';
+import { X, Image as ImageIcon, Globe, Tag, Sparkles } from 'lucide-react';
 import { motion } from 'motion/react';
 import TiptapEditor from './TiptapEditor';
 import { uploadImage } from '../../lib/upload';
 
+export interface BlogItem {
+  _id?: string;
+  slug?: string;
+  title?: string;
+  content?: string;
+  summary?: string;
+  author?: string;
+  category?: string;
+  status?: string;
+  tags?: string[] | string;
+  metaDescription?: string;
+  date?: string;
+  image?: string;
+}
+
 interface BlogEditorProps {
-  initialData: any;
+  initialData: BlogItem | null;
   onSave: (data: any) => Promise<void>;
   onCancel: () => void;
 }
@@ -22,6 +37,7 @@ const CATEGORIES = [
 
 export default function BlogEditor({ initialData, onSave, onCancel }: BlogEditorProps) {
   const [formData, setFormData] = useState({
+    _id: initialData?._id,
     title: initialData?.title || '',
     content: initialData?.content || '',
     summary: initialData?.summary || '',
@@ -29,10 +45,10 @@ export default function BlogEditor({ initialData, onSave, onCancel }: BlogEditor
     category: initialData?.category || 'Clinical ART Guidelines',
     status: initialData?.status || 'Published',
     tags: Array.isArray(initialData?.tags) ? initialData.tags.join(', ') : (initialData?.tags || 'ART Act, Cryobank, Embryology'),
-    readTime: initialData?.readTime || '4 min read',
     metaDescription: initialData?.metaDescription || initialData?.summary || '',
     date: initialData?.date || '',
-    image: initialData?.image || ''
+    image: initialData?.image || '',
+    slug: initialData?.slug || ''
   });
   const [uploadingImage, setUploadingImage] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -62,36 +78,31 @@ export default function BlogEditor({ initialData, onSave, onCancel }: BlogEditor
   };
 
   const handleContentChange = (content: string) => {
-    // Estimate read time: ~200 words per minute
-    const textOnly = content.replace(/<[^>]+>/g, ' ');
-    const wordCount = textOnly.trim().split(/\s+/).filter(Boolean).length;
-    const minutes = Math.max(1, Math.ceil(wordCount / 200));
-    const estimated = `${minutes} min read`;
-
     setFormData(prev => ({
       ...prev,
-      content,
-      readTime: estimated
+      content
     }));
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const tagArray = formData.tags
-      .split(',')
-      .map(t => t.trim())
-      .filter(Boolean);
-
-    await onSave({
-      ...formData,
-      tags: tagArray,
-      metaDescription: formData.metaDescription || formData.summary
-    });
   };
 
   const generatedSlug = formData.title
     ? formData.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
     : 'article-headline';
+
+  const currentSlug = formData.slug || generatedSlug;
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const tagArray = typeof formData.tags === 'string'
+      ? formData.tags.split(',').map(t => t.trim()).filter(Boolean)
+      : (formData.tags || []);
+
+    await onSave({
+      ...formData,
+      slug: currentSlug,
+      tags: tagArray,
+      metaDescription: formData.metaDescription || formData.summary
+    });
+  };
 
   return (
     <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center z-50 p-4">
@@ -164,31 +175,17 @@ export default function BlogEditor({ initialData, onSave, onCancel }: BlogEditor
               </div>
 
               {/* Status & Read Time in Row */}
-              <div className="grid grid-cols-2 gap-2.5">
-                <div className="space-y-1.5">
-                  <label className="block text-xs font-semibold text-slate-700">Publish Status</label>
-                  <select 
-                    value={formData.status}
-                    onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 text-xs font-medium text-slate-800"
-                  >
-                    <option value="Published">Published</option>
-                    <option value="Draft">Draft</option>
-                  </select>
-                </div>
-
-                <div className="space-y-1.5">
-                  <label className="block text-xs font-semibold text-slate-700 flex items-center gap-1">
-                    <Clock className="w-3.5 h-3.5 text-slate-400" /> Read Time
-                  </label>
-                  <input 
-                    type="text"
-                    value={formData.readTime}
-                    onChange={(e) => setFormData({ ...formData, readTime: e.target.value })}
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 text-xs text-slate-800" 
-                    placeholder="e.g. 5 min read"
-                  />
-                </div>
+              {/* Publish Status */}
+              <div className="space-y-1.5">
+                <label className="block text-xs font-semibold text-slate-700">Publish Status</label>
+                <select 
+                  value={formData.status}
+                  onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 text-xs font-medium text-slate-800"
+                >
+                  <option value="Published">Published</option>
+                  <option value="Draft">Draft</option>
+                </select>
               </div>
 
               {/* Author Name */}
@@ -226,7 +223,7 @@ export default function BlogEditor({ initialData, onSave, onCancel }: BlogEditor
                   {formData.title || 'Your Article Headline'} - Genes India ART Bank
                 </div>
                 <div className="text-[11px] text-emerald-700 truncate font-mono">
-                  https://genesindia.com/blogs/{generatedSlug}
+                  https://genesindia.com/blogs/{currentSlug}
                 </div>
                 <div className="text-[11px] text-slate-500 line-clamp-2 leading-relaxed">
                   {formData.metaDescription || formData.summary || 'Summary description will appear in search engine snippet cards.'}

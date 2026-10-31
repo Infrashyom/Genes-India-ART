@@ -90,14 +90,7 @@ export const createRequest = async (req: AuthRequest, res: Response) => {
       donor: donorId,
       requestId,
       hospital: req.user?.id,
-      status: 'Under Review',
-      shippingDetails: {
-        carrier: 'CryoPort Cold Chain Logistics',
-        shipperId: `DS-${Math.floor(100 + Math.random() * 900)}`,
-        tempLog: '-196°C LN2 Vapor Phase',
-        currentLocation: 'Central ART Cryo Vault',
-        eta: '3-4 Business Days after approval'
-      }
+      status: 'Under Review'
     };
 
     const newRequest = new SampleRequest(requestData);
@@ -115,29 +108,14 @@ export const createRequest = async (req: AuthRequest, res: Response) => {
 
 export const updateRequestStatus = async (req: AuthRequest, res: Response) => {
   try {
-    const { status, remarks, shippingDetails } = req.body;
+    const { status, remarks } = req.body;
     const updateData: any = {};
     
     if (status) {
       updateData.status = status;
-      if (status === 'Dispatched') {
-        updateData['shippingDetails.dispatchedAt'] = new Date();
-        updateData['shippingDetails.currentLocation'] = 'In Transit - Validated Cold Chain';
-      } else if (status === 'Delivered') {
-        updateData['shippingDetails.deliveredAt'] = new Date();
-        updateData['shippingDetails.currentLocation'] = 'Delivered to Hospital IVF Laboratory';
-      }
     }
     
     if (remarks !== undefined) updateData.remarks = remarks;
-
-    if (shippingDetails) {
-      if (shippingDetails.carrier) updateData['shippingDetails.carrier'] = shippingDetails.carrier;
-      if (shippingDetails.shipperId) updateData['shippingDetails.shipperId'] = shippingDetails.shipperId;
-      if (shippingDetails.trackingNumber) updateData['shippingDetails.trackingNumber'] = shippingDetails.trackingNumber;
-      if (shippingDetails.eta) updateData['shippingDetails.eta'] = shippingDetails.eta;
-      if (shippingDetails.currentLocation) updateData['shippingDetails.currentLocation'] = shippingDetails.currentLocation;
-    }
 
     const request = await SampleRequest.findByIdAndUpdate(
       req.params.id, 

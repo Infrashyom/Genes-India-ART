@@ -51,6 +51,6 @@ Open your browser at: `http://localhost:3000`
 
 | Portal | Email | Password |
 |---|---|---|
-| **Admin Portal** | `demo@admin.genesindia.com` | `password` |
-| **Staff Portal** | `demo@staff.genesindia.com` | `password` |
-| **Hospital Portal** | `demo@hospital.genesindia.com` | `password` |
+| **Admin Portal** | `admin@genesindia.com` | `password` |
+| **Staff Portal** | `staff@genesindia.com` | `password` |
+| **Hospital Portal** | `hospital@genesindia.com` | `password` |

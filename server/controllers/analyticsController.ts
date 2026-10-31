@@ -109,6 +109,7 @@ export const getAdminOverview = async (req: Request, res: Response) => {
     const data = {
       activeHospitals,
       verifiedDonors,
+      totalDonors,
       sampleRequests,
       selectedYear,
       availableYears,

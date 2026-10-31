@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import mongoose from 'mongoose';
 import { User } from '../models/User.js';
 import { Blog } from '../models/Blog.js';
 import { Gallery } from '../models/Gallery.js';
@@ -9,7 +10,6 @@ import authRoutes from './auth.js';
 import donorRoutes from './donors.js';
 import inventoryRoutes from './inventory.js';
 import requestRoutes from './requests.js';
-import taskRoutes from './tasks.js';
 import crmRoutes from './crm.js';
 import analyticsRoutes from './analytics.js';
 import uploadRoutes from './upload.js';
@@ -25,7 +25,6 @@ router.use('/inventory', inventoryRoutes);
 
 // Mount workflow routes
 router.use('/requests', requestRoutes);
-router.use('/tasks', taskRoutes);
 
 // Mount CRM routes
 router.use('/crm', crmRoutes);
@@ -101,7 +100,11 @@ router.patch('/users/:id/status', async (req, res) => {
 
 router.put('/blogs/:id', async (req, res) => {
   try {
-    const updatedBlog = await Blog.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    const updateData = { ...req.body };
+    if (!updateData.slug && updateData.title) {
+      updateData.slug = updateData.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+    }
+    const updatedBlog = await Blog.findByIdAndUpdate(req.params.id, updateData, { new: true });
     res.json(updatedBlog);
   } catch (error) {
     res.status(400).json({ error: 'Failed to update blog' });
@@ -117,10 +120,16 @@ router.delete('/blogs/:id', async (req, res) => {
   }
 });
 
-
 router.get('/blogs/:id', async (req, res) => {
   try {
-    const blog = await Blog.findById(req.params.id);
+    const { id } = req.params;
+    let blog = null;
+    if (mongoose.Types.ObjectId.isValid(id)) {
+      blog = await Blog.findById(id);
+    }
+    if (!blog) {
+      blog = await Blog.findOne({ slug: id });
+    }
     if (!blog) return res.status(404).json({ error: 'Blog not found' });
     res.json(blog);
   } catch (error) {
@@ -137,6 +146,9 @@ router.get('/blogs', async (req, res) => {
     const skip = (page - 1) * limit;
 
     const filters: any = {};
+    if (req.query.status) {
+      filters.status = req.query.status;
+    }
     if (req.query.search) {
       filters.$or = [
         { title: { $regex: req.query.search, $options: 'i' } },
@@ -154,7 +166,11 @@ router.get('/blogs', async (req, res) => {
 
 router.post('/blogs', async (req, res) => {
   try {
-    const newBlog = new Blog(req.body);
+    const blogData = { ...req.body };
+    if (!blogData.slug && blogData.title) {
+      blogData.slug = blogData.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+    }
+    const newBlog = new Blog(blogData);
     await newBlog.save();
     res.status(201).json(newBlog);
   } catch (error) {
@@ -282,7 +298,7 @@ router.delete('/reviews/:id', async (req, res) => {
 router.get('/settings', async (req, res) => {
   try {
     const settings = await Setting.find();
-    const settingsObj = {};
+    const settingsObj: Record<string, any> = {};
     settings.forEach(s => {
       settingsObj[s.key] = s.value;
     });
@@ -294,7 +310,7 @@ router.get('/settings', async (req, res) => {
 
 router.put('/settings', async (req, res) => {
   try {
-    const updates = req.body;
+    const updates = (req.body || {}) as Record<string, any>;
     for (const key of Object.keys(updates)) {
       await Setting.findOneAndUpdate(
         { key },

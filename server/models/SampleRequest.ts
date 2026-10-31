@@ -32,12 +32,12 @@ const SampleRequestSchema = new mongoose.Schema({
   remarks: { type: String }, // Internal notes or feedback to hospital
 
   shippingDetails: {
-    carrier: { type: String, default: 'CryoPort Cold Chain Logistics' },
-    shipperId: { type: String, default: 'DS-LN2-841' },
+    carrier: { type: String },
+    shipperId: { type: String },
     trackingNumber: { type: String },
-    tempLog: { type: String, default: '-196°C LN2 Vapor Phase' },
+    tempLog: { type: String },
     eta: { type: String },
-    currentLocation: { type: String, default: 'Central Cryo Logistics Depot' },
+    currentLocation: { type: String },
     dispatchedAt: { type: Date },
     deliveredAt: { type: Date }
   },

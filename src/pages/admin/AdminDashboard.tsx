@@ -6,6 +6,7 @@ import api from '../../lib/api';
 interface AnalyticsData {
   activeHospitals: number;
   verifiedDonors: number;
+  totalDonors?: number;
   sampleRequests: number;
   selectedYear: number;
   availableYears: number[];
@@ -181,12 +182,14 @@ export default function AdminDashboard() {
             <div className="flex justify-between items-center text-xs">
               <span className="text-slate-500">Allocation Rate:</span>
               <span className="font-bold text-emerald-600">
-                {totalYearRequests > 0 ? Math.round((totalYearMatches / totalYearRequests) * 100) : 100}%
+                {totalYearRequests > 0 ? Math.round((totalYearMatches / totalYearRequests) * 100) : 0}%
               </span>
             </div>
             <div className="flex justify-between items-center text-xs">
               <span className="text-slate-500">Registry Donors:</span>
-              <span className="font-bold text-slate-800">{data?.verifiedDonors || 0} Screened</span>
+              <span className="font-bold text-slate-800">
+                {data?.verifiedDonors || 0} Active{data?.totalDonors ? ` (${data.totalDonors} Screened)` : ''}
+              </span>
             </div>
           </div>
         </div>

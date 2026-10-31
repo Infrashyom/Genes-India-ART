@@ -1,16 +1,16 @@
 import React from 'react';
 import { motion } from 'motion/react';
-import { Eye, Edit2, Trash2, Image as ImageIcon, Clock } from 'lucide-react';
+import { Eye, Edit2, Trash2, Image as ImageIcon } from 'lucide-react';
 
 interface Blog {
   _id: string;
+  slug?: string;
   title: string;
   summary: string;
   content: string;
   author: string;
   category?: string;
   status?: string;
-  readTime?: string;
   tags?: string[];
   date: string;
   image: string;
@@ -47,7 +47,7 @@ export default function BlogCard({ blog, index, onEdit, onDelete }: BlogCardProp
       <div className="flex-1 flex flex-col pt-1 pb-1 relative pr-28">
         <div className="flex flex-wrap items-center gap-2 text-xs mb-2">
           {blog.category && (
-            <span className="text-[11px] font-medium text-blue-700 bg-blue-50 px-2.5 py-0.5 rounded-full border border-blue-100">
+            <span className="text-[11px] font-semibold text-blue-700 bg-blue-50 px-2.5 py-0.5 rounded-full border border-blue-100">
               {blog.category}
             </span>
           )}
@@ -59,11 +59,6 @@ export default function BlogCard({ blog, index, onEdit, onDelete }: BlogCardProp
           <span className="text-slate-400 text-[11px]">
             {blog.date || 'Recent'} • {blog.author || 'Author'}
           </span>
-          {blog.readTime && (
-            <span className="text-slate-400 text-[11px] flex items-center gap-1">
-              <Clock className="w-3 h-3" /> {blog.readTime}
-            </span>
-          )}
         </div>
 
         <h2 className="text-lg font-bold text-slate-900 mb-1.5 leading-snug">
@@ -75,7 +70,7 @@ export default function BlogCard({ blog, index, onEdit, onDelete }: BlogCardProp
         
         <div className="absolute top-2 right-2 flex items-center gap-1.5">
           <a 
-            href={`/blogs/${blog._id}`}
+            href={`/blogs/${blog.slug || blog._id}`}
             target="_blank"
             rel="noopener noreferrer"
             className="w-8 h-8 rounded-lg bg-slate-100 text-slate-600 flex items-center justify-center hover:bg-slate-200 transition-colors" 

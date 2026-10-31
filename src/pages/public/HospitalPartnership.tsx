@@ -23,10 +23,7 @@ export default function HospitalPartnership() {
     setStatus('idle');
     setErrorMessage('');
     try {
-      await api.post('/crm/leads', {
-        ...formData,
-        notes: `ICMR Reg: ${formData.icmrNumber}`
-      });
+      await api.post('/crm/leads', formData);
       setStatus('success');
     } catch (err: any) {
       console.error(err);

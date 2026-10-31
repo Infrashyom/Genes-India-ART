@@ -10,11 +10,16 @@ const upload = multer({
   limits: { fileSize: 5 * 1024 * 1024 } // 5MB limit
 });
 
+// Configure Cloudinary with individual credentials
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET
 });
+
+const isCloudinaryConfigured = Boolean(
+  process.env.CLOUDINARY_CLOUD_NAME && process.env.CLOUDINARY_API_KEY && process.env.CLOUDINARY_API_SECRET
+);
 
 router.post('/', (req: Request, res: Response, next: NextFunction) => {
   upload.single('file')(req, res, async (err: any) => {
@@ -34,15 +39,14 @@ router.post('/', (req: Request, res: Response, next: NextFunction) => {
         return res.status(400).json({ error: 'No file uploaded' });
       }
 
-      // Check size again as safety check
       if (req.file.size > 5 * 1024 * 1024) {
         return res.status(400).json({ 
           error: 'File size exceeds 5MB limit. Please upload a file smaller than 5MB.' 
         });
       }
 
-      if (!process.env.CLOUDINARY_CLOUD_NAME) {
-        // Fallback for preview if no keys provided
+      if (!isCloudinaryConfigured) {
+        console.warn('⚠️ Cloudinary credentials not detected in env. Falling back to data URI.');
         const b64 = Buffer.from(req.file.buffer).toString('base64');
         const dataURI = "data:" + req.file.mimetype + ";base64," + b64;
         return res.json({ secure_url: dataURI, public_id: 'local_' + Date.now() });
@@ -52,13 +56,14 @@ router.post('/', (req: Request, res: Response, next: NextFunction) => {
       const dataURI = "data:" + req.file.mimetype + ";base64," + b64;
 
       const result = await cloudinary.uploader.upload(dataURI, {
-        resource_type: 'auto'
+        resource_type: 'auto',
+        folder: 'genes_india'
       });
 
       res.json({ secure_url: result.secure_url, public_id: result.public_id });
     } catch (error) {
       console.error('Cloudinary upload error:', error);
-      res.status(500).json({ error: 'Upload failed' });
+      res.status(500).json({ error: 'Cloudinary upload failed' });
     }
   });
 });

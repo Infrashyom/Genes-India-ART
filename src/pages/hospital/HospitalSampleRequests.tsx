@@ -10,7 +10,6 @@ import {
   Loader2, 
   X, 
   UploadCloud, 
-  Truck, 
   ExternalLink, 
   Eye, 
   AlertTriangle,
@@ -101,12 +100,10 @@ export default function HospitalSampleRequests() {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'Approved':
-        return 'bg-emerald-50 text-emerald-700 border-emerald-200';
       case 'Dispatched':
-        return 'bg-indigo-50 text-indigo-700 border-indigo-200';
       case 'Delivered':
       case 'Completed':
-        return 'bg-green-50 text-green-700 border-green-200';
+        return 'bg-emerald-50 text-emerald-700 border-emerald-200';
       case 'Documents Requested':
         return 'bg-amber-50 text-amber-800 border-amber-300';
       case 'Under Review':
@@ -131,8 +128,7 @@ export default function HospitalSampleRequests() {
     if (activeTab === 'all') return true;
     if (activeTab === 'review') return ['Pending', 'Under Review'].includes(req.status);
     if (activeTab === 'docs') return req.status === 'Documents Requested';
-    if (activeTab === 'approved') return req.status === 'Approved';
-    if (activeTab === 'dispatched') return ['Dispatched', 'Delivered', 'Completed'].includes(req.status);
+    if (activeTab === 'approved') return ['Approved', 'Dispatched', 'Delivered', 'Completed'].includes(req.status);
     if (activeTab === 'rejected') return req.status === 'Rejected';
     return true;
   });
@@ -178,8 +174,7 @@ export default function HospitalSampleRequests() {
             { id: 'all', label: 'All', count: requests.length },
             { id: 'review', label: 'Under Review', count: requests.filter(r => ['Pending', 'Under Review'].includes(r.status)).length },
             { id: 'docs', label: 'Docs Requested', count: requests.filter(r => r.status === 'Documents Requested').length },
-            { id: 'approved', label: 'Approved', count: requests.filter(r => r.status === 'Approved').length },
-            { id: 'dispatched', label: 'Dispatched / Done', count: requests.filter(r => ['Dispatched', 'Delivered', 'Completed'].includes(r.status)).length },
+            { id: 'approved', label: 'Approved & Allocated', count: requests.filter(r => ['Approved', 'Dispatched', 'Delivered', 'Completed'].includes(r.status)).length },
             { id: 'rejected', label: 'Rejected', count: requests.filter(r => r.status === 'Rejected').length }
           ].map(tab => (
             <button
@@ -270,10 +265,9 @@ export default function HospitalSampleRequests() {
                     </td>
                     <td className="px-6 py-4">
                       <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold border ${getStatusBadge(req.status)}`}>
-                        {req.status === 'Approved' && <CheckCircle2 className="w-3.5 h-3.5" />}
-                        {req.status === 'Dispatched' && <Truck className="w-3.5 h-3.5" />}
+                        {['Approved', 'Dispatched', 'Delivered', 'Completed'].includes(req.status) && <CheckCircle2 className="w-3.5 h-3.5" />}
                         {req.status === 'Documents Requested' && <AlertCircle className="w-3.5 h-3.5 text-amber-600" />}
-                        {req.status === 'Under Review' && <Clock className="w-3.5 h-3.5" />}
+                        {['Pending', 'Under Review'].includes(req.status) && <Clock className="w-3.5 h-3.5" />}
                         {req.status === 'Rejected' && <XCircle className="w-3.5 h-3.5" />}
                         {req.status}
                       </span>
@@ -502,35 +496,6 @@ export default function HospitalSampleRequests() {
                 </div>
                 <p className="text-[11px] text-slate-400">Supported formats: PDF, JPG, PNG up to 5MB.</p>
               </div>
-
-              {/* Shipping Logistics Box if Dispatched/Delivered */}
-              {selectedRequest.shippingDetails && ['Dispatched', 'Delivered', 'Completed'].includes(selectedRequest.status) && (
-                <div className="bg-indigo-50/50 border border-indigo-200 rounded-2xl p-4 text-xs space-y-2">
-                  <div className="font-bold text-indigo-950 flex items-center gap-1.5 pb-1 border-b border-indigo-100">
-                    <Truck className="w-4 h-4 text-indigo-600" /> Cold-Chain Logistics Status
-                  </div>
-                  <div className="grid grid-cols-2 gap-2 text-slate-700">
-                    <div>
-                      <span className="text-slate-400 block text-[11px]">Carrier</span>
-                      <span className="font-semibold">{selectedRequest.shippingDetails.carrier}</span>
-                    </div>
-                    <div>
-                      <span className="text-slate-400 block text-[11px]">Tracking Number</span>
-                      <span className="font-mono font-bold text-indigo-700">
-                        {selectedRequest.shippingDetails.trackingNumber || 'CP-VALIDATED'}
-                      </span>
-                    </div>
-                    <div>
-                      <span className="text-slate-400 block text-[11px]">Temperature Log</span>
-                      <span className="font-semibold text-emerald-700">{selectedRequest.shippingDetails.tempLog || '-196°C LN2'}</span>
-                    </div>
-                    <div>
-                      <span className="text-slate-400 block text-[11px]">Current Location</span>
-                      <span className="font-semibold">{selectedRequest.shippingDetails.currentLocation}</span>
-                    </div>
-                  </div>
-                </div>
-              )}
 
               {/* Modal Footer */}
               <div className="flex justify-end pt-2 border-t border-slate-100">

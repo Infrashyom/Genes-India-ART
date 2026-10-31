@@ -26,9 +26,7 @@ import {
   MessageSquare,
   FileText,
   Star,
-  Truck,
-  CheckSquare,
-  FlaskConical
+  Truck
 } from 'lucide-react';
 import { cn } from './lib/utils';
 import { APP_NAME, APP_TAGLINE, APP_DESCRIPTION, CONTACT_INFO, SOCIAL_LINKS } from './constants';
@@ -37,16 +35,21 @@ import { Facebook, Twitter, Instagram, Linkedin, Mail, Image as ImageIcon } from
 import api from './lib/api';
 
 export function PublicLayout() {
-  const [socialLinks, setSocialLinks] = useState(SOCIAL_LINKS);
+  const [socialLinks, setSocialLinks] = useState<{
+    facebook?: string;
+    twitter?: string;
+    instagram?: string;
+    linkedin?: string;
+  }>({});
   
   useEffect(() => {
     api.get('/settings').then(res => {
       if (res.data) {
         setSocialLinks({
-          facebook: res.data.facebookUrl || SOCIAL_LINKS.facebook,
-          twitter: res.data.twitterUrl || SOCIAL_LINKS.twitter,
-          instagram: res.data.instagramUrl || SOCIAL_LINKS.instagram,
-          linkedin: res.data.linkedinUrl || SOCIAL_LINKS.linkedin,
+          facebook: res.data.facebookUrl?.trim() || undefined,
+          twitter: res.data.twitterUrl?.trim() || undefined,
+          instagram: res.data.instagramUrl?.trim() || undefined,
+          linkedin: res.data.linkedinUrl?.trim() || undefined,
         });
       }
     }).catch(console.error);
@@ -170,7 +173,13 @@ export function PublicLayout() {
               </li>
               <li className="flex items-center gap-3">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-blue-500 shrink-0"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
-                <span className="text-white font-medium">{CONTACT_INFO.phone}</span>
+                <a 
+                  href={`tel:${CONTACT_INFO.phone.replace(/[^0-9+]/g, '')}`} 
+                  className="text-white font-medium hover:text-blue-400 transition-colors cursor-pointer"
+                  title="Click to call"
+                >
+                  {CONTACT_INFO.phone}
+                </a>
               </li>
               <li className="flex items-center gap-3">
                 <Mail className="w-4 h-4 text-blue-500 shrink-0" />
@@ -178,20 +187,30 @@ export function PublicLayout() {
               </li>
             </ul>
             
-            <div className="flex gap-4">
-              <a href={socialLinks.facebook} target="_blank" rel="noreferrer" className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 hover:bg-blue-600 hover:text-white transition-colors">
-                <Facebook className="w-5 h-5" />
-              </a>
-              <a href={socialLinks.twitter} target="_blank" rel="noreferrer" className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 hover:bg-blue-400 hover:text-white transition-colors">
-                <Twitter className="w-5 h-5" />
-              </a>
-              <a href={socialLinks.instagram} target="_blank" rel="noreferrer" className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 hover:bg-pink-600 hover:text-white transition-colors">
-                <Instagram className="w-5 h-5" />
-              </a>
-              <a href={socialLinks.linkedin} target="_blank" rel="noreferrer" className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 hover:bg-blue-700 hover:text-white transition-colors">
-                <Linkedin className="w-5 h-5" />
-              </a>
-            </div>
+            {(socialLinks.facebook || socialLinks.twitter || socialLinks.instagram || socialLinks.linkedin) && (
+              <div className="flex gap-4">
+                {socialLinks.facebook && (
+                  <a href={socialLinks.facebook} target="_blank" rel="noreferrer" aria-label="Facebook" className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 hover:bg-blue-600 hover:text-white transition-colors">
+                    <Facebook className="w-5 h-5" />
+                  </a>
+                )}
+                {socialLinks.twitter && (
+                  <a href={socialLinks.twitter} target="_blank" rel="noreferrer" aria-label="Twitter" className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 hover:bg-blue-400 hover:text-white transition-colors">
+                    <Twitter className="w-5 h-5" />
+                  </a>
+                )}
+                {socialLinks.instagram && (
+                  <a href={socialLinks.instagram} target="_blank" rel="noreferrer" aria-label="Instagram" className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 hover:bg-pink-600 hover:text-white transition-colors">
+                    <Instagram className="w-5 h-5" />
+                  </a>
+                )}
+                {socialLinks.linkedin && (
+                  <a href={socialLinks.linkedin} target="_blank" rel="noreferrer" aria-label="LinkedIn" className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 hover:bg-blue-700 hover:text-white transition-colors">
+                    <Linkedin className="w-5 h-5" />
+                  </a>
+                )}
+              </div>
+            )}
           </div>
         </div>
         <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 mt-16 pt-8 border-t border-slate-800 flex flex-col md:flex-row justify-between items-center gap-4 text-slate-500 text-sm">
@@ -239,8 +258,6 @@ export function DashboardLayout() {
     { name: 'Analytics Overview', href: '/admin', icon: LayoutDashboard },
     { name: 'Sample Requests', href: '/admin/requests', icon: TestTube },
     { name: 'Donor Inventory', href: '/admin/inventory', icon: Users },
-    { name: 'Operational Tasks', href: '/admin/tasks', icon: CheckSquare },
-    { name: 'Lab & Diagnostics', href: '/admin/lab-reports', icon: FlaskConical },
     { name: 'Partnership Requests', href: '/admin/leads', icon: Building2 },
     { name: 'Contact Responses', href: '/admin/contacts', icon: MessageSquare },
     { name: 'User Management', href: '/admin/users', icon: Users },
@@ -253,12 +270,9 @@ export function DashboardLayout() {
     { name: 'Dashboard', href: '/hospital', icon: LayoutDashboard },
     { name: 'Donor Search', href: '/hospital/search', icon: Search },
     { name: 'Sample Requests', href: '/hospital/requests', icon: TestTube },
-    { name: 'Reservations', href: '/hospital/reservations', icon: Truck },
     { name: 'My Profile', href: '/hospital/profile', icon: Users },
   ] : [
     { name: 'Donor Records (EDR)', href: '/staff/donors', icon: Users },
-    { name: 'Operational Tasks', href: '/staff/tasks', icon: CheckSquare },
-    { name: 'Lab & Diagnostics', href: '/staff/lab-reports', icon: FlaskConical },
     { name: 'Donor Inventory', href: '/staff/inventory', icon: Users },
     { name: 'Sample Requests', href: '/staff/requests', icon: TestTube },
     { name: 'Partnership Requests', href: '/staff/leads', icon: Building2 },

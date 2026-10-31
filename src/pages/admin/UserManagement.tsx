@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Users, Shield, Building2, UserPlus, Search, Filter, Edit2, Ban, CheckCircle, Smartphone } from 'lucide-react';
+import { Users, Shield, Building2, UserPlus, Search, Edit2, Ban, CheckCircle, Smartphone } from 'lucide-react';
 import { motion } from 'motion/react';
 import api from '../../lib/api';
 import Pagination from '../../components/Pagination';
@@ -96,8 +96,8 @@ export default function UserManagement() {
       </div>
 
       <div className="bg-white rounded-2xl shadow-sm border border-slate-200">
-        <div className="p-4 border-b border-slate-200 flex flex-wrap gap-4 items-center justify-between">
-          <div className="relative flex-1 min-w-[200px] max-w-md">
+        <div className="p-4 border-b border-slate-200">
+          <div className="relative w-full max-w-2xl">
             <Search className="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
             <input 
               type="text" 
@@ -107,9 +107,6 @@ export default function UserManagement() {
               className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
             />
           </div>
-          <button className="flex items-center gap-2 px-4 py-2 border border-slate-200 rounded-lg hover:bg-slate-50 text-slate-600 font-medium transition-colors">
-            <Filter className="w-4 h-4" /> Filters
-          </button>
         </div>
 
         <div className="overflow-x-auto">

@@ -2,6 +2,7 @@ import mongoose from 'mongoose';
 
 const LeadSchema = new mongoose.Schema({
   hospitalName: { type: String, required: true },
+  icmrNumber: { type: String },
   contactPerson: { type: String, required: true },
   email: { type: String, required: true },
   phone: { type: String, required: true },
@@ -13,8 +14,6 @@ const LeadSchema = new mongoose.Schema({
     enum: ['New', 'Contacted', 'In Progress', 'Onboarded', 'Rejected'], 
     default: 'New' 
   },
-  
-  notes: { type: String }, // Internal staff notes
   
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now }

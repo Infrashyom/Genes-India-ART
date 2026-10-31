@@ -6,7 +6,16 @@ import { ContactQuery } from '../models/ContactQuery.js';
 
 export const createLead = async (req: Request, res: Response) => {
   try {
-    const newLead = new Lead(req.body);
+    const { hospitalName, contactPerson, email, phone, location, message, icmrNumber } = req.body;
+    const newLead = new Lead({
+      hospitalName,
+      contactPerson,
+      email,
+      phone,
+      location,
+      message,
+      icmrNumber: icmrNumber?.trim() || ''
+    });
     await newLead.save();
     res.status(201).json({ message: 'Partnership request submitted successfully.', lead: newLead });
   } catch (error: any) {
@@ -21,11 +30,17 @@ export const getLeads = async (req: Request, res: Response) => {
     const skip = (page - 1) * limit;
 
     const filters: any = {};
-    if (req.query.status) filters.status = req.query.status;
+    if (req.query.status && req.query.status !== 'All') {
+      filters.status = req.query.status;
+    }
     if (req.query.search) {
       filters.$or = [
         { hospitalName: { $regex: req.query.search, $options: 'i' } },
-        { contactPerson: { $regex: req.query.search, $options: 'i' } }
+        { contactPerson: { $regex: req.query.search, $options: 'i' } },
+        { email: { $regex: req.query.search, $options: 'i' } },
+        { phone: { $regex: req.query.search, $options: 'i' } },
+        { location: { $regex: req.query.search, $options: 'i' } },
+        { icmrNumber: { $regex: req.query.search, $options: 'i' } }
       ];
     }
     
@@ -40,11 +55,9 @@ export const getLeads = async (req: Request, res: Response) => {
 
 export const updateLeadStatus = async (req: Request, res: Response) => {
   try {
-    const { status, notes } = req.body;
+    const { status } = req.body;
     const updateData: any = {};
-    
     if (status) updateData.status = status;
-    if (notes !== undefined) updateData.notes = notes;
 
     const lead = await Lead.findByIdAndUpdate(
       req.params.id, 

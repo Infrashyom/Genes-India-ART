@@ -6,9 +6,7 @@ import {
   ArrowRight, 
   Loader2, 
   Search, 
-  Truck, 
   FileText, 
-  PlusCircle, 
   Clock, 
   ShieldCheck,
   Building2,
@@ -43,13 +41,13 @@ export default function HospitalDashboard() {
   }, []);
 
   const totalRequests = requests.length;
-  const pendingRequests = requests.filter(r => ['Pending', 'Under Review', 'Documents Requested'].includes(r.status)).length;
-  const inTransitCount = requests.filter(r => r.status === 'Dispatched').length;
-  const completedCount = requests.filter(r => ['Delivered', 'Completed'].includes(r.status)).length;
+  const pendingRequests = requests.filter(r => ['Pending', 'Under Review'].includes(r.status)).length;
+  const docsRequestedCount = requests.filter(r => r.status === 'Documents Requested').length;
+  const approvedCount = requests.filter(r => ['Approved', 'Dispatched', 'Delivered', 'Completed'].includes(r.status)).length;
 
   const stats = [
     { 
-      label: 'Total Sample Requests', 
+      label: 'Total Requisitions', 
       value: totalRequests, 
       sub: 'All recorded cycle requisitions',
       icon: FileText, 
@@ -58,27 +56,27 @@ export default function HospitalDashboard() {
       border: 'border-blue-100'
     },
     { 
-      label: 'Under Review & Action', 
+      label: 'Under Review', 
       value: pendingRequests, 
-      sub: 'Pending review or doc submission',
+      sub: 'Awaiting ART Bank clearance',
       icon: Clock, 
       color: 'text-amber-600', 
       bg: 'bg-amber-50',
       border: 'border-amber-100'
     },
     { 
-      label: 'Samples in Cold-Chain Transit', 
-      value: inTransitCount, 
-      sub: 'Active dry-shipper deliveries',
-      icon: Truck, 
-      color: 'text-indigo-600', 
-      bg: 'bg-indigo-50',
-      border: 'border-indigo-100'
+      label: 'Documents Requested', 
+      value: docsRequestedCount, 
+      sub: 'Action needed: submit dossiers',
+      icon: AlertCircle, 
+      color: 'text-rose-600', 
+      bg: 'bg-rose-50',
+      border: 'border-rose-100'
     },
     { 
-      label: 'Delivered / Completed', 
-      value: completedCount, 
-      sub: 'Received at laboratory / cycle done',
+      label: 'Approved & Allocated', 
+      value: approvedCount, 
+      sub: 'Cleared for patient clinical cycle',
       icon: CheckCircle2, 
       color: 'text-emerald-600', 
       bg: 'bg-emerald-50',
@@ -121,7 +119,7 @@ export default function HospitalDashboard() {
               Welcome back, {user?.name || 'Partner Hospital'}
             </h1>
             <p className="text-slate-300 text-xs sm:text-sm max-w-2xl leading-relaxed">
-              Manage patient donor sample requisitions, track validated LN2 dry-shipper deliveries, and verify ICMR-compliant screening clearances.
+              Manage patient donor sample requisitions, track verification and regulatory approval, and submit ICMR-mandated clinical dossiers.
             </p>
           </div>
           
@@ -133,10 +131,10 @@ export default function HospitalDashboard() {
               <Search className="w-4 h-4" /> Search Donors
             </Link>
             <Link 
-              to="/hospital/reservations" 
+              to="/hospital/requests" 
               className="bg-white/10 hover:bg-white/20 text-white font-medium text-xs sm:text-sm px-4 py-2.5 rounded-xl transition-all border border-white/10 flex items-center gap-2"
             >
-              <Truck className="w-4 h-4" /> Track Shipments
+              <FileText className="w-4 h-4" /> View Requisitions
             </Link>
           </div>
         </div>
@@ -349,23 +347,48 @@ export default function HospitalDashboard() {
                 </div>
               </div>
 
+              <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100 text-xs space-y-2">
+                <span className="font-bold text-slate-800 block pb-1 border-b border-slate-200">Donor Information</span>
+                <div className="flex justify-between">
+                  <span className="text-slate-500">Donor Code:</span>
+                  <span className="font-mono font-bold text-blue-600">{selectedRequest.donor?.donorCode || 'N/A'}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-500">Blood Group:</span>
+                  <span className="font-semibold text-slate-800">{selectedRequest.donor?.bloodGroup || 'Recorded'}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-500">Allocated Vials:</span>
+                  <span className="font-semibold text-slate-800">{selectedRequest.quantity || 1} Vial(s)</span>
+                </div>
+              </div>
+
+              {selectedRequest.documents && selectedRequest.documents.length > 0 && (
+                <div className="border border-slate-200 rounded-xl p-3.5 text-xs space-y-2 bg-white">
+                  <div className="font-bold text-slate-800 flex items-center justify-between">
+                    <span className="flex items-center gap-1.5"><FileText className="w-3.5 h-3.5 text-blue-600" /> Statutory Dossiers</span>
+                    <span className="text-slate-500 font-normal">{selectedRequest.documents.length} File(s)</span>
+                  </div>
+                  <div className="space-y-1">
+                    {selectedRequest.documents.map((doc: any, i: number) => (
+                      <div key={i} className="flex items-center justify-between py-1 border-b border-slate-50 last:border-0">
+                        <span className="text-slate-700 truncate max-w-[240px]">{doc.name}</span>
+                        <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${
+                          doc.status === 'Approved' ? 'bg-emerald-50 text-emerald-700' :
+                          doc.status === 'Rejected' ? 'bg-rose-50 text-rose-700' : 'bg-amber-50 text-amber-700'
+                        }`}>
+                          {doc.status || 'Pending'}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               {selectedRequest.remarks && (
                 <div className="p-3.5 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-900">
                   <span className="font-bold block mb-1">Remarks / Bank Advisory:</span>
                   {selectedRequest.remarks}
-                </div>
-              )}
-
-              {selectedRequest.shippingDetails && (
-                <div className="border border-slate-200 rounded-xl p-3.5 text-xs space-y-1.5 bg-white">
-                  <div className="font-bold text-slate-800 flex items-center gap-1.5">
-                    <Truck className="w-3.5 h-3.5 text-blue-600" /> Logistics Status
-                  </div>
-                  <div className="text-slate-600">Location: {selectedRequest.shippingDetails.currentLocation || 'Preparing'}</div>
-                  <div className="text-slate-600">Carrier: {selectedRequest.shippingDetails.carrier}</div>
-                  {selectedRequest.shippingDetails.trackingNumber && (
-                    <div className="text-slate-600">AWB Tracking: <span className="font-mono text-blue-600 font-semibold">{selectedRequest.shippingDetails.trackingNumber}</span></div>
-                  )}
                 </div>
               )}
             </div>
