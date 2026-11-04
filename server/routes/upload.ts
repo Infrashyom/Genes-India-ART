@@ -1,6 +1,7 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import multer from 'multer';
 import { v2 as cloudinary } from 'cloudinary';
+import path from 'path';
 
 const router = Router();
 
@@ -45,20 +46,34 @@ router.post('/', (req: Request, res: Response, next: NextFunction) => {
         });
       }
 
+      const ext = path.extname(req.file.originalname).toLowerCase();
+      const isHeic = ext === '.heic' || ext === '.heif' || req.file.mimetype === 'image/heic' || req.file.mimetype === 'image/heif';
+      let mimetype = req.file.mimetype;
+      if (isHeic && (!mimetype || mimetype === 'application/octet-stream')) {
+        mimetype = 'image/heic';
+      }
+
       if (!isCloudinaryConfigured) {
         console.warn('⚠️ Cloudinary credentials not detected in env. Falling back to data URI.');
         const b64 = Buffer.from(req.file.buffer).toString('base64');
-        const dataURI = "data:" + req.file.mimetype + ";base64," + b64;
+        const dataURI = "data:" + mimetype + ";base64," + b64;
         return res.json({ secure_url: dataURI, public_id: 'local_' + Date.now() });
       }
 
       const b64 = Buffer.from(req.file.buffer).toString('base64');
-      const dataURI = "data:" + req.file.mimetype + ";base64," + b64;
+      const dataURI = "data:" + mimetype + ";base64," + b64;
 
-      const result = await cloudinary.uploader.upload(dataURI, {
+      const uploadOptions: any = {
         resource_type: 'auto',
         folder: 'genes_india'
-      });
+      };
+
+      // If HEIC/HEIF, convert format to JPG on Cloudinary for universal browser rendering
+      if (isHeic) {
+        uploadOptions.format = 'jpg';
+      }
+
+      const result = await cloudinary.uploader.upload(dataURI, uploadOptions);
 
       res.json({ secure_url: result.secure_url, public_id: result.public_id });
     } catch (error) {

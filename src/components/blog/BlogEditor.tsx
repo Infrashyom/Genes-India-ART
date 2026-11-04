@@ -147,12 +147,12 @@ export default function BlogEditor({ initialData, onSave, onCancel }: BlogEditor
                       <span className="text-xs font-medium text-slate-500">
                         {uploadingImage ? 'Uploading...' : 'Click to Upload Cover'}
                       </span>
-                      <span className="text-[10px] text-slate-400">Max 5MB (PNG, JPG)</span>
+                      <span className="text-[10px] text-slate-400">Max 5MB (PNG, JPG, HEIC, WEBP)</span>
                     </>
                   )}
                   <input 
                     type="file" 
-                    accept="image/*" 
+                    accept="image/*,.heic,.HEIC,.heif,.HEIF,image/heic,image/heif" 
                     ref={fileInputRef} 
                     className="hidden" 
                     onChange={handleImageUpload}

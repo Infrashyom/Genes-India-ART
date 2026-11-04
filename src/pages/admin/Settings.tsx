@@ -395,7 +395,7 @@ export default function Settings() {
                           <span>{uploadingId === 'logo' ? 'Uploading...' : 'Choose File'}</span>
                           <input 
                             type="file" 
-                            accept="image/png,image/svg+xml,image/jpeg,image/webp" 
+                            accept="image/png,image/svg+xml,image/jpeg,image/webp,.heic,.HEIC,image/heic" 
                             className="hidden" 
                             disabled={uploadingId === 'logo'}
                             onChange={(e) => {
@@ -598,7 +598,7 @@ export default function Settings() {
                             <input 
                               type="file" 
                               className="hidden" 
-                              accept="image/*"
+                              accept="image/*,.heic,.HEIC,.heif,.HEIF,image/heic,image/heif"
                               onChange={(e) => {
                                 const file = e.target.files?.[0];
                                 if (file) handleAboutImageUpload(file);
@@ -701,7 +701,7 @@ export default function Settings() {
                                     <input 
                                       type="file" 
                                       className="hidden" 
-                                      accept="image/*"
+                                      accept="image/*,.heic,.HEIC,.heif,.HEIF,image/heic,image/heif" 
                                       disabled={uploadingId === founder._id}
                                       onChange={(e) => {
                                         const file = e.target.files?.[0];
@@ -914,7 +914,7 @@ export default function Settings() {
                   <span>{uploadingId === 'newFounder' ? 'Uploading...' : 'Upload Image'}</span>
                   <input 
                     type="file" 
-                    accept="image/*" 
+                    accept="image/*,.heic,.HEIC,.heif,.HEIF,image/heic,image/heif" 
                     className="hidden" 
                     disabled={uploadingId === 'newFounder'}
                     onChange={(e) => {
